@@ -1,0 +1,533 @@
+{
+  "info": {
+    "_postman_id": "0a54ff33-539b-4980-8511-8c4490ee6c96",
+    "name": "AUTHENTICATED REST API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49385451",
+    "_collection_link": "https://go.postman.co/collection/49385451-0a54ff33-539b-4980-8511-8c4490ee6c96?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "CREATE AN ITEM",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Response is an array or object (list-like)', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    const data = pm.response.json();",
+              "    pm.expect(data, 'Expected array or object').to.satisfy(v => Array.isArray(v) || v && typeof v === 'object');",
+              "})",
+              "",
+              "pm.test('List endpoint: array items have an id when array is returned', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    const data = pm.response.json();",
+              "    if (!Array.isArray(data))",
+              "        return;",
+              "    data.forEach((item, idx) => {",
+              "        pm.expect(item, `Item at index ${ idx } should be an object`).to.be.an('object');",
+              "        pm.expect(item).to.have.property('id');",
+              "    });",
+              "})"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/objects",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "objects"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CREATE AN ITEM",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Create: response includes an id', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.be.an('object');",
+              "    pm.expect(json, 'Expected created resource to have \\'id\\'').to.have.property('id');",
+              "})",
+              "",
+              "pm.test('Create: returned fields reflect sent body when possible', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    let sent;",
+              "    try {",
+              "        sent = pm.request.body && pm.request.body.raw ? JSON.parse(pm.request.body.raw) : null;",
+              "    } catch (e) {",
+              "        sent = null;",
+              "    }",
+              "    if (!sent)",
+              "        return;",
+              "    const json = pm.response.json();",
+              "    [",
+              "        'name',",
+              "        'data',",
+              "        'title',",
+              "        'body'",
+              "    ].forEach(k => {",
+              "        if (Object.prototype.hasOwnProperty.call(sent, k) && Object.prototype.hasOwnProperty.call(json, k)) {",
+              "            pm.expect(json[k], `Field '${ k }' should match request`).to.eql(sent[k]);",
+              "        }",
+              "    });",
+              "})"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Apple MacBook Pro \",\r\n  \"data\": {\r\n    \"year\": 2023,\r\n    \"price\": 1849.99,\r\n    \"CPU model\": \"Intel Core i9\",\r\n    \"Hard disk size\": \"1 TB\"\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/objects",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "objects"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "LIST OF ITEM",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('List: response is array or object', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    const data = pm.response.json();",
+              "    pm.expect(data).to.satisfy(v => Array.isArray(v) || v && typeof v === 'object');",
+              "})",
+              "",
+              "pm.test('List: if array returned, items are objects', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    const data = pm.response.json();",
+              "    if (!Array.isArray(data))",
+              "        return;",
+              "    data.forEach((item, idx) => {",
+              "        pm.expect(item, `Item at index ${ idx } should be object`).to.be.an('object');",
+              "    });",
+              "})"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/objects",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "objects"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SINGLE ITEM",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Single item: response is an object', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.be.an('object');",
+              "})",
+              "",
+              "pm.test('Single item: id matches last path segment when possible', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    const json = pm.response.json();",
+              "    if (!json || typeof json !== 'object' || !Object.prototype.hasOwnProperty.call(json, 'id'))",
+              "        return;",
+              "    const url = pm.request.url.toString();",
+              "    const match = url.match(/\\/([^\\/?#]+)\\/?(?:\\?|#|$)/);",
+              "    if (!match)",
+              "        return;",
+              "    const expectedId = match[1];",
+              "    pm.expect(String(json.id), 'Response id should match request path id').to.eql(String(expectedId));",
+              "})"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/objects/{{objectId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "objects",
+            "{{objectId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "UPDATE",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Update (PUT): response is an object', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    pm.expect(pm.response.json()).to.be.an('object');",
+              "})",
+              "",
+              "pm.test('Update (PUT): returned fields reflect sent body when possible', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    let sent;",
+              "    try {",
+              "        sent = pm.request.body && pm.request.body.raw ? JSON.parse(pm.request.body.raw) : null;",
+              "    } catch (e) {",
+              "        sent = null;",
+              "    }",
+              "    if (!sent)",
+              "        return;",
+              "    const json = pm.response.json();",
+              "    [",
+              "        'name',",
+              "        'data',",
+              "        'title',",
+              "        'body'",
+              "    ].forEach(k => {",
+              "        if (Object.prototype.hasOwnProperty.call(sent, k) && Object.prototype.hasOwnProperty.call(json, k)) {",
+              "            pm.expect(json[k], `Field '${ k }' should match request`).to.eql(sent[k]);",
+              "        }",
+              "    });",
+              "})",
+              "",
+              "pm.test('Update (PUT): id matches last path segment when possible', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    const json = pm.response.json();",
+              "    if (!json || typeof json !== 'object' || !Object.prototype.hasOwnProperty.call(json, 'id'))",
+              "        return;",
+              "    const url = pm.request.url.toString();",
+              "    const match = url.match(/\\/([^\\/?#]+)\\/?(?:\\?|#|$)/);",
+              "    if (!match)",
+              "        return;",
+              "    pm.expect(String(json.id)).to.eql(String(match[1]));",
+              "})"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Apple MacBook Pro 16\",\r\n  \"data\": {\r\n    \"year\": 2019,\r\n    \"price\": 2049.99,\r\n    \"CPU model\": \"Intel Core i9\",\r\n    \"Hard disk size\": \"1 TB\",\r\n    \"color\": \"silver\"\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/objects/{{objectId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "objects",
+            "{{objectId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PARTIAL UPDATE",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Partial update (PATCH): response is an object', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    pm.expect(pm.response.json()).to.be.an('object');",
+              "})",
+              "",
+              "pm.test('Partial update (PATCH): returned fields reflect sent body when possible', function () {",
+              "    const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "    if (!ct.includes('application/json'))",
+              "        return;",
+              "    let sent;",
+              "    try {",
+              "        sent = pm.request.body && pm.request.body.raw ? JSON.parse(pm.request.body.raw) : null;",
+              "    } catch (e) {",
+              "        sent = null;",
+              "    }",
+              "    if (!sent)",
+              "        return;",
+              "    const json = pm.response.json();",
+              "    Object.keys(sent).forEach(k => {",
+              "        if (Object.prototype.hasOwnProperty.call(json, k)) {",
+              "            pm.expect(json[k], `Field '${ k }' should match request`).to.eql(sent[k]);",
+              "        }",
+              "    });",
+              "})"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Apple MacBook Pro 16 (ff8081819cd4022c019cf64bd6b8337e)\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/objects/{{objectId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "objects",
+            "{{objectId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE AN ITEM",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Delete: returns expected status code (200/202/204)', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([",
+              "        200,",
+              "        202,",
+              "        204",
+              "    ]);",
+              "})",
+              "",
+              "pm.test('Delete: response mentions deleted id when body is present', function () {",
+              "    if ([",
+              "            204,",
+              "            205,",
+              "            304",
+              "        ].includes(pm.response.code))",
+              "        return;",
+              "    const url = pm.request.url.toString();",
+              "    const match = url.match(/\\/([^\\/?#]+)\\/?(?:\\?|#|$)/);",
+              "    const expectedId = match ? match[1] : null;",
+              "    if (!expectedId)",
+              "        return;",
+              "    const bodyText = (pm.response.text() || '').toLowerCase();",
+              "    pm.expect(bodyText, 'Delete response should mention id or deletion').to.satisfy(t => t.includes(String(expectedId).toLowerCase()) || t.includes('delete'));",
+              "})"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/objects/{{objectId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "objects",
+            "{{objectId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "x-api-key",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{vault:authorization-secret}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Collection pre-request script: Initialize collection variables if not set",
+          "if (!pm.collectionVariables.get(\"baseUrl\")) {",
+          "    pm.collectionVariables.set(\"baseUrl\", \"https://api.restful-api.dev\");",
+          "}",
+          "if (!pm.collectionVariables.get(\"objectId\")) {",
+          "    pm.collectionVariables.set(\"objectId\", \"ff8081819cd4022c019cf64bd6b8337e\");",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Collection-level API tests (apply to every request)",
+          "// Best practices:",
+          "// - Broad success-code validation (2xx/3xx) unless request indicates a negative test",
+          "// - Response time threshold",
+          "// - Auth header presence (when collection uses auth)",
+          "// - JSON Content-Type and valid JSON when a body is present",
+          "",
+          "(function () {",
+          "  const requestName = (pm.info.requestName || \"\").toLowerCase();",
+          "  const isNegative = /(negative|invalid|unauthoriz|forbidden|not\\s*found|bad\\s*request|error)/i.test(requestName);",
+          "",
+          "  // --- Performance ---",
+          "  pm.test(\"Response time is under 2000ms\", function () {",
+          "    pm.expect(pm.response.responseTime, `Response time was ${pm.response.responseTime}ms`).to.be.below(2000);",
+          "  });",
+          "",
+          "  // --- Status code range ---",
+          "  pm.test(\"Status code is in expected range\", function () {",
+          "    const code = pm.response.code;",
+          "    if (isNegative) {",
+          "      // Negative tests typically expect 4xx/5xx",
+          "      pm.expect(code, `Unexpected status code for negative test: ${code}`).to.be.within(400, 599);",
+          "    } else {",
+          "      // Successful flows: allow 2xx and 3xx",
+          "      pm.expect(code, `Unexpected status code: ${code}. Body (first 200 chars): ${(pm.response.text() || \"\").slice(0, 200)}`)",
+          "        .to.be.within(200, 399);",
+          "    }",
+          "  });",
+          "",
+          "  // Helper: determine if response should have a body",
+          "  function hasResponseBody() {",
+          "    if ([204, 205, 304].includes(pm.response.code)) return false;",
+          "    const method = (pm.request.method || \"\").toUpperCase();",
+          "    if (method === \"HEAD\") return false;",
+          "    const text = pm.response.text();",
+          "    return typeof text === \"string\" && text.trim().length > 0;",
+          "  }",
+          "",
+          "  // --- Auth header presence (do not reveal secret) ---",
+          "  pm.test(\"Auth header exists when using API key auth\", function () {",
+          "    // Collection auth uses x-api-key header. Validate it's present on the actual request.",
+          "    // (Postman may inject it via auth helpers; this checks the final request headers.)",
+          "    const key = \"x-api-key\";",
+          "    const value = pm.request.headers.get(key);",
+          "    pm.expect(!!value, `Missing required auth header: ${key}`).to.eql(true);",
+          "    // Ensure it's not accidentally left as an empty string.",
+          "    pm.expect((value || \"\").trim().length, `${key} header is empty`).to.be.greaterThan(0);",
+          "  });",
+          "",
+          "  // --- JSON Content-Type & parseability (when applicable) ---",
+          "  pm.test(\"Content-Type is JSON when a body is present\", function () {",
+          "    if (!hasResponseBody()) return;",
+          "    const ct = pm.response.headers.get(\"Content-Type\") || \"\";",
+          "    pm.expect(ct.toLowerCase(), `Expected JSON Content-Type but got: '${ct}'`).to.include(\"application/json\");",
+          "  });",
+          "",
+          "  pm.test(\"Response body is valid JSON when a body is present\", function () {",
+          "    if (!hasResponseBody()) return;",
+          "    const ct = (pm.response.headers.get(\"Content-Type\") || \"\").toLowerCase();",
+          "    if (!ct.includes(\"application/json\")) return; // Only enforce JSON parsing for JSON responses",
+          "",
+          "    let parsed;",
+          "    pm.expect(function () {",
+          "      parsed = pm.response.json();",
+          "    }, `Response was not valid JSON. Body preview: ${(pm.response.text() || \"\").slice(0, 200)}`).to.not.throw();",
+          "",
+          "    pm.expect(parsed, \"Parsed JSON should be an object or array\").to.satisfy(v => v !== null && (Array.isArray(v) || typeof v === \"object\"));",
+          "  });",
+          "})();"
+        ]
+      }
+    }
+  ]
+}
