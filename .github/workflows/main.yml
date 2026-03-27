@@ -32,14 +32,12 @@ jobs:
         run: |
           newman run "PublicObjects.postman_collection.json" \
           -r htmlextra,cli \
-          --delay-request 60000 \
           --reporter-htmlextra-export reports/report.html \
           --verbose
 
       - name: Run json api 
         run: |
           newman run "JSON.postman_collection.json" \ env-var baseUrl=https://jsonplaceholder.typicode.com/posts \
-          --delay-request 60000 \
           --reporter-htmlextra-export reports/report.html \
           --verbose
           
